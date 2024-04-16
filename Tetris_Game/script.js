@@ -34,7 +34,7 @@ function getNextTetromino() {
     const row = name === 'I' ? -1 : -2;
 
     return {
-        name: name,
+        name: name,//
         matrix: matrix,
         row: row,
         col: col
