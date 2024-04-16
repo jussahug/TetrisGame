@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <script src="script.js"></script>
+    <title>Tetris</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+
 </head>
 <body>
-<canvas width="320" height="640" id="game"></canvas>
-
+<div class="container">
+    <canvas width="320" height="640" id="game"></canvas>
+    <div class="next-container">
+        <div id="nextTetromino">Next Tetromino</div>
+        <canvas width="100" height="100" id="nextBlockCanvas"></canvas>
+        <div id="score">Score: </div>
+    </div>
+</div>
+<script src="script.js"></script>
 </body>
 </html>
