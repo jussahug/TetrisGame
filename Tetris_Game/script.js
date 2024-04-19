@@ -42,7 +42,6 @@ function getNextTetromino() {
 }
 
 // Hàm quay ma trận 90 độ
-
 function rotate(matrix) {
     const N = matrix.length - 1;
     const result = matrix.map((row, i) =>
@@ -72,13 +71,16 @@ function isValidMove(matrix, cellRow, cellCol) {
     return true;
 }
 
+
+let score = 0;
+
 // Hàm đặt tetromino vào trường chơi và xử lý khi tetromino chạm đáy hoặc chạm vào tetromino khác
 function placeTetromino() {
+    let linesCleared = 0;// đếm số dòng đã xóa
     for (let row = 0; row < tetromino.matrix.length; row++) {
         for (let col = 0; col < tetromino.matrix[row].length; col++) {
             if (tetromino.matrix[row][col]) {
 
-                // game over if piece has any part offscreen
                 if (tetromino.row + row < 0) {
                     return showGameOver();
                 }
@@ -91,8 +93,8 @@ function placeTetromino() {
     //Kiểm tra xóa dòng bắt đầu từ dưới cùng và làm từ phía dưới
     for (let row = playfield.length - 1; row >= 0; ) {
         if (playfield[row].every(cell => !!cell)) {
-
-            // thả mọi hàng phía trên hàng
+            linesCleared++;
+            // thả mọi hàng phía trên xuống
             for (let r = row; r >= 0; r--) {
                 for (let c = 0; c < playfield[r].length; c++) {
                     playfield[r][c] = playfield[r-1][c];
@@ -103,32 +105,18 @@ function placeTetromino() {
             row--;
         }
     }
-    clearLines();
-    tetromino = getNextTetromino();
-
-}
-
-// Hàm xóa các hàng đã đầy
-let score = 0;
-function clearLines() {
-    let lineCount = 0;
-    outer: for (let row = playfield.length - 1; row >= 0; row--) {
-        for (let col = 0; col < playfield[row].length; col++) {
-            if (!playfield[row][col]) {
-                continue outer;
-            }
-        }
-        const removedLine = playfield.splice(row, 1)[0].fill(0);
-        playfield.unshift(removedLine);
-        row++;
-        lineCount++;
+    if (linesCleared > 0) {
+        score += linesCleared * 100;
+        console.log(score)
+        drawScore();
     }
-    score += lineCount * 100;
-    drawScore();// dấd
+    tetromino = getNextTetromino();
+    drawNextTetromino();
 }
+
 function drawScore() {
     const scoreElement = document.getElementById('score');
-    scoreElement.textContent = `Score: ${score}`;
+    scoreElement.textContent = `Score: ${score.toString()}`;
 }
 
 
@@ -217,7 +205,7 @@ const colors = {
 
 let count = 0;
 let tetromino = getNextTetromino();
-let rAF = null;  // keep track of the animation frame so we can cancel it
+let rAF = null;
 let gameOver = false;
 let frame = 60;
 
@@ -226,6 +214,9 @@ const nextBlockCanvas = document.getElementById('nextBlockCanvas');
 const nextBlockContext = nextBlockCanvas.getContext('2d');
 
 function drawNextTetromino() {
+    if (tetrominoSequence.length === 0) {
+        return; // Nếu không có tetromino trong chuỗi, thoát khỏi hàm
+    }
     const nextTetromino = tetrominoSequence[tetrominoSequence.length - 1];
     const nextMatrix = tetrominos[nextTetromino];
     const blockSize = 20; // Kích thước mỗi khối tetromino
@@ -257,7 +248,6 @@ function loop() {
             if (playfield[row][col]) {
                 const name = playfield[row][col];
                 context.fillStyle = colors[name];
-
                 // vẽ 1 px nhỏ hơn gạch tạo một hiệu ứng
                 context.fillRect(col * grid, row * grid, grid-1, grid-1);
             }
@@ -299,37 +289,43 @@ function loop() {
 document.addEventListener('keydown', function(e) {
     if (gameOver) return;
 
-    // trái và phải
-    if (e.which === 37 || e.which === 39) {
-        const col = e.which === 37
-            ? tetromino.col - 1
-            : tetromino.col + 1;
+    switch (e.which) {
+        case 37: // mũi tên trái (qua trái)
+        case 65: // phím a
+            const leftCol = tetromino.col - 1;
+            if (isValidMove(tetromino.matrix, tetromino.row, leftCol)) {
+                tetromino.col = leftCol;
+            }
+            break;
 
-        if (isValidMove(tetromino.matrix, tetromino.row, col)) {
-            tetromino.col = col;
-        }
-    }
+        case 39: // mũi tên phải (qua phải)
+        case 68: // phím d
+            const rightCol = tetromino.col + 1;
+            if (isValidMove(tetromino.matrix, tetromino.row, rightCol)) {
+                tetromino.col = rightCol;
+            }
+            break;
 
-    // lên (xoay)
-    if (e.which === 38) {
-        const matrix = rotate(tetromino.matrix);
-        if (isValidMove(matrix, tetromino.row, tetromino.col)) {
-            tetromino.matrix = matrix;
-        }
-    }
+        case 38: // mũi tên lên (xoay)
+        case 87: // phím w
+            const rotatedMatrix = rotate(tetromino.matrix);
+            if (isValidMove(rotatedMatrix, tetromino.row, tetromino.col)) {
+                tetromino.matrix = rotatedMatrix;
+            }
+            break;
 
-    // xuống (nhanh hơn)
-    if(e.which === 40) {
-        const row = tetromino.row + 1;
+        case 40: // mũi tên xuống
+        case 83: // phím s
+            const nextRow = tetromino.row + 1;
+            if (isValidMove(tetromino.matrix, nextRow, tetromino.col)) {
+                tetromino.row = nextRow;
+            } else {
+                placeTetromino();
+            }
+            break;
 
-        if (!isValidMove(tetromino.matrix, row, tetromino.col)) {
-            tetromino.row = row - 1;
-
-            placeTetromino();
-            return;
-        }
-
-        tetromino.row = row;
+        default:
+            break;
     }
 });
 
