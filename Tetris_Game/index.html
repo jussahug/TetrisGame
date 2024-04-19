@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tetris</title>
     <link rel="stylesheet" type="text/css" href="style.css">
-
 </head>
 <body>
 <div class="container">
+    <button id="personalInfoButton" onclick="openPopup()">Personal Info</button>
     <canvas width="320" height="640" id="game"></canvas>
     <div class="next-container">
         <div id="nextTetromino">Next Tetromino</div>
@@ -14,6 +16,28 @@
         <div id="score">Score:</div>
     </div>
 </div>
+<div class="popup" id="personalInfoPopup">
+    <h2>Personal Information</h2>
+    <p>Họ và tên: Nguyễn Cường Huy</p>
+    <p>MSSV: 21130377</p>
+    <p>Lớp: DH21DTB</p>
+    <button onclick="closePopup()">Close</button>
+</div>
+<div class="overlay" id="overlay" onclick="closePopup()"></div>
+
 <script src="script.js"></script>
+<script>
+    // Hàm mở pop-up
+    function openPopup() {
+        document.getElementById("personalInfoPopup").style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+    }
+
+    // Hàm đóng pop-up
+    function closePopup() {
+        document.getElementById("personalInfoPopup").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+    }
+</script>
 </body>
 </html>
