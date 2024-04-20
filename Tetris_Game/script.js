@@ -73,6 +73,7 @@ function isValidMove(matrix, cellRow, cellCol) {
 
 
 let score = 0;
+let fallingTetromino = null;
 
 // Hàm đặt tetromino vào trường chơi và xử lý khi tetromino chạm đáy hoặc chạm vào tetromino khác
 function placeTetromino() {
@@ -89,7 +90,7 @@ function placeTetromino() {
             }
         }
     }
-
+    fallingTetromino = tetromino;
     //Kiểm tra xóa dòng bắt đầu từ dưới cùng và làm từ phía dưới
     for (let row = playfield.length - 1; row >= 0; ) {
         if (playfield[row].every(cell => !!cell)) {
@@ -135,6 +136,57 @@ function showGameOver() {
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     context.fillText('GAME OVER!', canvas.width / 2, canvas.height / 2);
+    // Vẽ nút "Restart"
+    drawRestartButton();
+}
+let restartButtonArea = {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0
+};
+function drawRestartButton() {
+    // Vẽ nút
+    context.fillStyle = 'white';
+    context.fillRect(canvas.width / 2 - 50, canvas.height / 2 + 20, 100, 40);
+
+    // Viết văn bản
+    context.fillStyle = 'black';
+    context.font = '20px Arial';
+    context.textAlign = 'center';
+    context.fillText('Restart', canvas.width / 2, canvas.height / 2 + 45);
+
+    // Xác định vùng chứa nút
+    restartButtonArea = {
+        x: canvas.width / 2 - 50,
+        y: canvas.height / 2 + 20,
+        width: 100,
+        height: 40
+    };
+}
+
+function restartGame() {
+    // Xóa màn hình kết thúc game và nút restart
+    const overlay = document.getElementById('overlay');
+    while (overlay.firstChild) {
+        overlay.removeChild(overlay.firstChild);
+    }
+
+    // Reset điểm số
+    score = 0;
+    drawScore();
+
+    // Reset trạng thái trò chơi
+    gameOver = false;
+    tetrominoSequence.length = 0;
+    for (let row = 0; row < 20; row++) {
+        for (let col = 0; col < 10; col++) {
+            playfield[row][col] = 0;
+        }
+    }
+
+    // Bắt đầu lại vòng lặp trò chơi
+    rAF = requestAnimationFrame(loop);
 }
 
 const canvas = document.getElementById('game');
@@ -206,7 +258,7 @@ let count = 0;
 let tetromino = getNextTetromino();
 let rAF = null;
 let gameOver = false;
-let frame = 60;
+let frame = 50;
 
 
 const nextBlockCanvas = document.getElementById('nextBlockCanvas');
@@ -235,11 +287,53 @@ function drawNextTetromino() {
     }
 }
 
+let gameStarted = false;
+function drawStartMessage() {
+    context.fillStyle = 'white';
+    context.font = '20px Arial';
+    context.textAlign = 'center';
+    context.fillText('Vui lòng nhấn nút W A S D hoặc', canvas.width / 2, canvas.height / 2 - 20);
+    context.fillText('↑ ↓ ← → để bắt đầu chơi', canvas.width / 2, canvas.height / 2 + 20);
+}
+
+
+function clearStartMessage() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function changeLevel(){
+    score = 0;
+    gameOver = false;
+    tetrominoSequence.length = 0;
+    generateSequence();
+    for (let row = 0; row < 20; row++) {
+        for (let col = 0; col < 10; col++) {
+            playfield[row][col] = 0;
+        }
+    }
+    fallingTetromino = null;
+    gameStarted = false;
+}
+
+function startGameLevel1() {
+    changeLevel()
+}
+
+function startGameLevel2() {
+    changeLevel()
+}
 
 // Dùng vòng lặp trò chơi để vẽ trường chơi và tetromino
 function loop() {
     rAF = requestAnimationFrame(loop);
-    context.clearRect(0,0,canvas.width,canvas.height);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (!gameStarted) {
+        drawStartMessage();
+        return; // Dừng vòng lặp nếu trò chơi chưa bắt đầu
+    } else {
+    clearStartMessage();
+    }
 
     // Vẽ trường chơi
     for (let row = 0; row < 20; row++) {
@@ -248,14 +342,13 @@ function loop() {
                 const name = playfield[row][col];
                 context.fillStyle = colors[name];
                 // vẽ 1 px nhỏ hơn gạch tạo một hiệu ứng
-                context.fillRect(col * grid, row * grid, grid-1, grid-1);
+                context.fillRect(col * grid, row * grid, grid - 1, grid - 1);
             }
         }
     }
 
     // Vẽ tetromino hiện tại
     if (tetromino) {
-
         // tetromino rơi mỗi frame nhất định
         if (++count > frame) {
             tetromino.row++;
@@ -275,7 +368,7 @@ function loop() {
                 if (tetromino.matrix[row][col]) {
 
                     // vẽ 1 px nhỏ hơn gạch tạo một hiệu ứng
-                    context.fillRect((tetromino.col + col) * grid, (tetromino.row + row) * grid, grid-1, grid-1);
+                    context.fillRect((tetromino.col + col) * grid, (tetromino.row + row) * grid, grid - 1, grid - 1);
                 }
             }
         }
@@ -283,7 +376,6 @@ function loop() {
     // Vẽ tetromino tiếp theo
     drawNextTetromino();
 }
-
 // Lắng nghe sự kiện bàn phím để di chuyển tetromino
 document.addEventListener('keydown', function(e) {
     if (gameOver) return;
@@ -328,5 +420,67 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+// Thêm sự kiện click cho nút Restart
+canvas.addEventListener('click', function(event) {
+    const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+
+    // Kiểm tra xem click có trong vùng của nút Restart không
+    if (
+        mouseX >= restartButtonArea.x &&
+        mouseX <= restartButtonArea.x + restartButtonArea.width &&
+        mouseY >= restartButtonArea.y &&
+        mouseY <= restartButtonArea.y + restartButtonArea.height
+    ) {
+        restartGame();
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (!gameStarted) {
+        gameStarted = true;
+        clearStartMessage(); // Ẩn thông báo khi trò chơi bắt đầu
+        // Bắt đầu vòng lặp trò chơi
+        loop();
+    } else {
+        // Xử lý các phím di chuyển
+        switch (e.key) {
+            case 'ArrowUp':
+            case 'w':
+                break;
+            case 'ArrowDown':
+            case 's':
+                break;
+            case 'ArrowLeft':
+            case 'a':
+                break;
+            case 'ArrowRight':
+            case 'd':
+                break;
+        }
+    }
+});
+document.addEventListener('DOMContentLoaded', function() {
+    const levelSelect = document.getElementById('level');
+
+    // Lắng nghe sự kiện khi người chơi thay đổi cấp độ
+    levelSelect.addEventListener('change', function() {
+        const selectedLevel = parseInt(levelSelect.value); // Lấy giá trị cấp độ đã chọn
+
+        // Thực hiện hành động tương ứng với cấp độ đã chọn
+        switch (selectedLevel) {
+            case 1:
+                startGameLevel1();
+                break;
+            case 2:
+                startGameLevel2();
+                break;
+            default:
+                break;
+        }
+    });
+});
 // start the game
 rAF = requestAnimationFrame(loop);
+
+//level2

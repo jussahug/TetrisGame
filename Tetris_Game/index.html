@@ -8,16 +8,23 @@
 </head>
 <body>
 <div class="container">
-    <button id="personalInfoButton" onclick="openPopup()">Personal Info</button>
+    <button id="personalInfoButton" onclick="openPopup()">Thông tin cá nhân</button>
     <canvas width="320" height="640" id="game"></canvas>
     <div class="next-container">
         <div id="nextTetromino">Next Tetromino</div>
         <canvas width="100" height="100" id="nextBlockCanvas"></canvas>
         <div id="score">Score:</div>
+        <div id="level-selection">
+            <label for="level">Chọn cấp độ:</label>
+            <select id="level">
+                <option value="1">Level 1</option>
+                <option value="2">Level 2</option>
+            </select>
+        </div>
     </div>
 </div>
 <div class="popup" id="personalInfoPopup">
-    <h2>Personal Information</h2>
+    <h2>Thông tin cá nhân</h2>
     <p>Họ và tên: Nguyễn Cường Huy</p>
     <p>MSSV: 21130377</p>
     <p>Lớp: DH21DTB</p>
