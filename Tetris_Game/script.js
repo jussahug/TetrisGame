@@ -323,16 +323,50 @@ function startGameLevel2() {
     changeLevel()
 }
 
+function startGameLevel3() {
+    changeLevel()
+}
+
+function startGameLevel4() {
+    changeLevel()
+}
+
+function startGameLevel5() {
+    changeLevel()
+}
+
+function startGameLevel6() {
+    changeLevel()
+}
+
+let gamePaused = false;
+const pauseButton = document.getElementById('pauseButton');
+function pauseGame() {
+    if (!gamePaused) {
+        cancelAnimationFrame(rAF);
+        gamePaused = true;
+    }
+}
+
+function resumeGame() {
+    if (gamePaused) {
+        gamePaused = false;
+        loop();
+    }
+}
+
 // Dùng vòng lặp trò chơi để vẽ trường chơi và tetromino
 function loop() {
     rAF = requestAnimationFrame(loop);
+    if (gamePaused) {
+        return; // Dừng vòng lặp nếu trò chơi đã tạm dừng hoặc chưa bắt đầu
+    }
     context.clearRect(0, 0, canvas.width, canvas.height);
-
     if (!gameStarted) {
         drawStartMessage();
         return; // Dừng vòng lặp nếu trò chơi chưa bắt đầu
     } else {
-    clearStartMessage();
+        clearStartMessage();
     }
 
     // Vẽ trường chơi
@@ -475,12 +509,47 @@ document.addEventListener('DOMContentLoaded', function() {
             case 2:
                 startGameLevel2();
                 break;
+            case 3:
+                startGameLevel3();
+                break;
+            case 4:
+                startGameLevel4();
+                break;
+            case 5:
+                startGameLevel5();
+                break;
+            case 6:
+                startGameLevel6();
+                break;
             default:
                 break;
         }
     });
 });
+pauseButton.addEventListener('click', function() {
+    if (gamePaused) {
+        resumeGame(); // Nếu trò chơi đang tạm dừng, tiếp tục nó
+        pauseButton.textContent = 'Tạm dừng';
+    } else {
+        pauseGame(); // Nếu trò chơi đang chạy, tạm dừng nó
+        pauseButton.textContent = 'Tiếp tục';
+    }
+});
+
 // start the game
 rAF = requestAnimationFrame(loop);
 
-//level2
+//order
+// Hàm mở pop-up
+function openPopup() {
+    document.getElementById("personalInfoPopup").style.display = "block";
+    document.getElementById("overlay").style.display = "block";
+}
+
+// Hàm đóng pop-up
+function closePopup() {
+    document.getElementById("personalInfoPopup").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+}
+
+

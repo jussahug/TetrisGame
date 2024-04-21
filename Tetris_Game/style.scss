@@ -1,5 +1,10 @@
-$primary-color: black;
-$secondary-color: white;
+$main-color: #272727;
+$secondary-color: #ffffff;
+$background-color: #656565;
+$pink-color: #f357ef;
+$gray-color: #9a819a;
+$purple-color: #572b77;
+$yellow-color: #cfd349;
 
 * {
   margin: 0;
@@ -13,7 +18,7 @@ html, body {
 }
 
 body {
-  background: linear-gradient(135deg, #ab9191, #e377e0, #918642, #69bdba);
+  background: linear-gradient(135deg, #e377e0, #ab9191, #918642, #69bdba);
   background-size: 400% 400%;
   animation: gradientAnimation 15s ease infinite;
   display: flex;
@@ -33,9 +38,7 @@ body {
     background-position: 0% 50%;
   }
 }
-canvas {
-  border: 1px solid $secondary-color;
-}
+
 .container {
   position: relative;
   display: flex;
@@ -45,7 +48,9 @@ canvas {
 }
 
 #game {
-  border: 1px solid $secondary-color;
+  background-color: $main-color;
+  border: 2px solid $secondary-color;
+  margin: 0 auto;
   z-index: 2;
 }
 
@@ -53,22 +58,29 @@ canvas {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: $background-color;
+  padding: 20px;
+  border-radius: 5px;
+  border: 2px solid $secondary-color;
 }
-
 #nextTetromino {
-  color: #fff;
-  font-size: 24px;
+  color: $purple-color;
+  font-size: 28px;
+  font-weight: bold;
 }
 
 #nextBlockCanvas {
   width: 100px;
   height: 100px;
-  border: 1px solid #fff;
+  border: 1px solid $secondary-color;
+  background-color: $background-color;
+  margin-top: 10px;
 }
 
 #score {
-  color: #fff;
+  color: $yellow-color;
   font-size: 20px;
+  font-weight: bold;
   margin-top: 10px;
 }
 
@@ -78,8 +90,8 @@ canvas {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #fff;
-  border: 1px solid #000;
+  background-color: $secondary-color;
+  border: 2px solid #000;
   padding: 20px;
   z-index: 9999;
 }
@@ -95,13 +107,21 @@ canvas {
   z-index: 9998;
 }
 
+#pauseButton {
+  background-color: $main-color;
+  color: $secondary-color;
+  font-size: 20px;
+  margin-top: 10px;
+  padding: 10px 20px;
+}
+
 .restart-button {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10000;
-  background-color: #fff;
+  background-color: $secondary-color;
   color: #000;
   border: none;
   padding: 10px 20px;
@@ -112,4 +132,109 @@ canvas {
 .restart-button:hover {
   background-color: #000;
   color: #fff;
+}
+#personalInfoButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: $background-color;
+  color: $pink-color;
+  border: 1px solid $gray-color;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
+}
+
+#personalInfoButton:hover {
+  background-color: lighten($background-color, 5%);
+  color: lighten($pink-color, 5%);
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.7);
+}
+
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.tetromino {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  animation: move 5s linear infinite;
+}
+
+.tetromino0 {
+  background-color: red;
+  animation-delay: 0.0s;
+  top: 110px;
+}
+
+.tetromino1 {
+  background-color: blue;
+  animation-delay: 1.0s;
+  top: 210px;
+}
+
+.tetromino2 {
+  background-color: yellow;
+  animation-delay: 2.0s;
+  top: 310px;
+}
+
+.tetromino3 {
+  background-color: yellowgreen;
+  animation-delay: 3.0s;
+  top: 410px;
+}
+
+.tetromino4 {
+  background-color: magenta;
+  animation-delay: 4.0s;
+  top: 510px;
+}
+
+.tetromino5 {
+  background-color: green;
+  animation-delay: 0.75s;
+  top: 150px;
+}
+
+.tetromino6 {
+  background-color: orange;
+  animation-delay: 1.75s;
+  top: 250px;
+}
+
+.tetromino7 {
+  background-color: aqua;
+  animation-delay: 2.75s;
+  top: 350px;
+}
+
+.tetromino8 {
+  background-color: purple;
+  animation-delay: 3.75s;
+  top: 450px;
+}
+
+.tetromino9 {
+  background-color: rebeccapurple;
+  animation-delay: 4.75s;
+  top: 550px;
+}
+
+@keyframes move {
+  0% {
+    transform: translateX(0) rotate(0deg);
+  }
+  100% {
+    transform: translateX(calc(100vw + 200px)) rotate(720deg);
+  }
 }
