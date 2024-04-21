@@ -7,7 +7,7 @@ function getRandomInt(min, max) {
 }
 
 // Hàm tạo ra một chuỗi mới của các tetromino theo thứ tự ngẫu nhiên
-
+let selectedTetrominos = [];
 function generateSequence() {
     const sequence = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
 
@@ -265,9 +265,6 @@ const nextBlockCanvas = document.getElementById('nextBlockCanvas');
 const nextBlockContext = nextBlockCanvas.getContext('2d');
 
 function drawNextTetromino() {
-    if (tetrominoSequence.length === 0) {
-        return; // Nếu không có tetromino trong chuỗi, thoát khỏi hàm
-    }
     const nextTetromino = tetrominoSequence[tetrominoSequence.length - 1];
     const nextMatrix = tetrominos[nextTetromino];
     const blockSize = 20; // Kích thước mỗi khối tetromino
